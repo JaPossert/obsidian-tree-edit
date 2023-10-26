@@ -1,46 +1,70 @@
+import { produce } from 'immer';
 import { RootAction } from '../actions-types/root-reducer.actions-types';
-import { IStateRootReducer } from '../interfaces';
-import { RootReducerCases } from '../reducers-case-logic';
 import { RootTypes } from '../types';
+import { IRootState } from '../interfaces';
+import { createEmptyCard, createMainStates, selectCard } from './scripts';
 
-const { createMainStates, clickCardView, addCardRight, addCardVertically, changeCard, deleteCard, createEmptyCard } =
-  RootReducerCases;
-
-const initialState: IStateRootReducer = {
-  changedFromInterface: false,
+const initialState: IRootState = {
   stateMDContent: [],
-  stateForRender: [],
-  stateOfNavigation: '',
-  lastSelectedElem: { id: '', depth: 0 },
+  preactState: [],
+  selectedElem: {
+    id: '',
+    depth: 0,
+    children: [],
+    parents: [],
+    neighbors: [],
+    scrollChildren: [],
+  },
+  firstRender: '',
+  isEdit: false,
+  removeContent: false,
 };
 
-export const rootReducer = (state = initialState, action: RootAction) => {
+export const rootReducer = produce((draft: IRootState, action: RootAction) => {
   switch (action.type) {
+    case RootTypes.CREATE_MAIN_STATES:
+      createMainStates(draft, action.payload);
+      break;
+
     case RootTypes.CREATE_EMPTY_CARD:
-      return createEmptyCard(state, action.payload!);
+      createEmptyCard(draft, action.payload);
+      break;
 
     case RootTypes.CHANGE_FIRST_RENDER:
-      return { ...state, stateOfNavigation: action.payload! };
-
-    case RootTypes.CREATE_MAIN_STATES:
-      return createMainStates(state, action.payload!);
+      draft.firstRender = action.payload;
+      break;
 
     case RootTypes.CLICK_CARD_VIEW:
-      return clickCardView(state, action.payload!);
+      selectCard(draft, action.payload);
+      break;
 
     case RootTypes.ADD_CARD_RIGHT:
-      return addCardRight(state, action.payload!);
+      draft.preactState.push(action.payload);
+      break;
 
     case RootTypes.ADD_CARD_VERTICALLY:
-      return addCardVertically(state, action.payload!);
+      draft.preactState.push(action.payload);
+      break;
 
     case RootTypes.CHANGE_CARD:
-      return changeCard(state, action.payload!);
+      const { isEdit, newContent } = action.payload;
+      draft.isEdit = isEdit;
+      if (isEdit) {
+        draft.stateMDContent[draft.selectedElem.id].markdownContent = newContent;
+      }
+      break;
 
     case RootTypes.DELETE_CARD:
-      return deleteCard(state);
+      draft.stateMDContent.splice(draft.selectedElem.id, 1);
+      draft.preactState = [];
+      break;
+
+    case RootTypes.TOGGLE_CARD_EDIT:
+      const cardId = action.payload;
+      draft.stateMDContent[cardId].isEdit = !draft.stateMDContent[cardId].isEdit;
+      break;
 
     default:
-      return state;
+      return draft;
   }
-};
+}, initialState);

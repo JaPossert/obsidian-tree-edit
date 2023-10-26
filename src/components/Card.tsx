@@ -7,7 +7,7 @@ import { CardButtons } from './CardButtons';
 import { CardCodeMirror } from './CardCodeMirror';
 import { MemoCardView } from './CardView';
 
-const { clickCardView } = RootReducerActions;
+const { clickCardView, toggleCardEdit } = RootReducerActions;
 
 export const Card: FunctionComponent<ICard_Props> = ({ card }) => {
   const {
@@ -44,8 +44,12 @@ export const Card: FunctionComponent<ICard_Props> = ({ card }) => {
     }
   };
 
+  const onDoubleClick = () => {
+    dispatch(toggleCardEdit(id));
+  };
+
   return (
-    <div className={classes.join(' ')} onClick={onClick} style={{ scrollSnapAlign: scrollElement ? 'center' : 'none' }}>
+    <div className={classes.join(' ')} onClick={onClick} onDblClick={onDoubleClick} style={{ scrollSnapAlign: scrollElement ? 'center' : 'none' }}>
       <CardButtons isSelected={isSelected} isEdit={isEdit} depth={depth} editorValue={editorValue} />
 
       {isEdit && isSelected ? (

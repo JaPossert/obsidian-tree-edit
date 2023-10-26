@@ -7,6 +7,7 @@ import {
   CreateEmptyCard,
   CreateMainStates,
   DeleteCard,
+  ToggleCardEdit,
 } from '../actions-types/root-reducer.actions-types';
 import { IDataSelectedElem } from '../interfaces';
 import { readyState } from '../scripts';
@@ -56,3 +57,8 @@ export const changeCard = (isEdit: boolean, newContent: string): ChangeCard => (
 });
 
 export const deleteCard = (): DeleteCard => ({ type: RootTypes.DELETE_CARD });
+
+export const toggleCardEdit = (id: string): ToggleCardEdit => ({
+  type: RootTypes.TOGGLE_CARD_EDIT,
+  payload: id,
+});

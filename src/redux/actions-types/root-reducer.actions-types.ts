@@ -19,6 +19,8 @@ export type ChangeCard = IAction<typeof RootTypes.CHANGE_CARD, RootInterfaces.IC
 
 export type DeleteCard = IAction<typeof RootTypes.DELETE_CARD>;
 
+export type ToggleCardEdit = IAction<typeof RootTypes.TOGGLE_CARD_EDIT, string>;
+
 export type RootAction =
   | CreateMainStates
   | CreateEmptyCard
@@ -27,4 +29,5 @@ export type RootAction =
   | AddCardRight
   | ChangeCard
   | DeleteCard
-  | AddCardVertically;
+  | AddCardVertically
+  | ToggleCardEdit;
